@@ -1,0 +1,19 @@
+version: '3.2'
+networks:
+  monitoring:
+    driver: bridge
+
+services:
+  exporter:
+    image: grafana-pdf-exporter
+    hostname: exporter
+    environment:
+      GRAFANA_PDF_BIND_PORT: "8083"
+      GRAFANA_PDF_BIND_HOST: "::"
+      GRAFANA_PDF_BACKEND_URL: "http://grafana:3000"
+      GRAFANA_PDF_BACKEND_USER: "admin"
+      GRAFANA_PDF_BACKEND_PASS: "admin"
+    ports:
+      - "8083:8083"
+    networks:
+      - "monitoring"
