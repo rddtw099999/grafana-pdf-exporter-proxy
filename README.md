@@ -22,7 +22,7 @@ binding address and backend address can be configured in docker-compose.yaml fil
 
 	Type: `Links`
 
-	URL: `http://{Binding Address}:{Binding Link}/d/{Dashboard Link}/{Dashboard Name}?orgId=1`
+	URL: `http://{Binding Address}:{Binding Port}/d/{Dashboard Link}/{Dashboard Name}?orgId=1`
 
 	Icon: `doc`
 
@@ -34,5 +34,5 @@ binding address and backend address can be configured in docker-compose.yaml fil
 
  3. Export by command (or add in crontab):
     
-    `curl -o /tmp/export.pdf http://{Binding Address}:{Binding Link}/d/{Dashboard Link}/{Dashboard Name}?orgId=1`
+    `curl -o /tmp/export.pdf http://{Binding Address}:{Binding Port}/d/{Dashboard Link}/{Dashboard Name}?orgId=1`
 
