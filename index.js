@@ -139,7 +139,7 @@ function startServer(options) {
 
     try {
       const pdf = await streamPdf(url, { backendUser, backendPass, executablePath });
-      response.setHeader('Content-Type', 'text/pdf');
+      response.setHeader('Content-Type', 'application/pdf');
       pdf.pipe(response);
     }
     catch (e) {
