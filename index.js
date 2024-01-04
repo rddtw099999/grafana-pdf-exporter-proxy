@@ -10,6 +10,16 @@ const puppeteer = require('puppeteer');
  * @param {object} options
  * @returns
  */
+
+function isNetworkError(errorObject) {
+    return errorObject.message.includes("net::ERR_INTERNET_DISCONNECTED") ||
+        errorObject.message.includes("net::ERR_PROXY_CONNECTION_FAILED") ||
+        errorObject.message.includes("net::ERR_CONNECTION_RESET") ||
+        errorObject.message.includes("net::ERR_CONNECTION_CLOSE") ||
+        errorObject.message.includes("net::ERR_NAME_NOT_RESOLVED") ||
+        errorObject.message.includes("net::ERR_CONNECTION_TIMED_OUT");
+}
+
 async function streamPdf(url, options) {
   const {
     backendUser,
@@ -38,9 +48,11 @@ async function streamPdf(url, options) {
     await page.setExtraHTTPHeaders({ 'Authorization': authHeader });
   }
 
-  
   await page.setDefaultNavigationTimeout(120000);
-  await page.goto(url, { waitUntil: 'networkidle0' });
+
+
+  await page.goto(url + '/' , { waitUntil: 'networkidle0' });
+
   var height_px =
       (await page.evaluate(() => {
         return document
@@ -143,10 +155,23 @@ function startServer(options) {
       pdf.pipe(response);
     }
     catch (e) {
-      console.error(e);
-      response.setHeader('Content-Type', 'text/html');
-      response.statusCode = 500;
-      response.end('<h1>Internal Server Error 500</h>');
+       if (isNetworkError(e)) {
+          console.error(e.message);
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 500;
+          response.end('<h1>Internal Server Error 500</h><br><h2>Backend Connection Error, failed to connect Grafana dashboard</h2> <h5>' + e.message + '</h5>');
+        } else if(e.message.includes('getBoundingClientRect')){
+          console.error(e.message);
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 500;
+          response.end('<h1>Internal Server Error 500</h><br> <h2>Failed to get element "react-grid-layout", is this a Grafana Dashboard? or maybe dashboard has major updates.</h2> <br><h5>' + e.message +'</h5>'  );
+        } else{
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 500;
+          response.end('<h1>Internal Server Error 500</h><br> <h5> ' + e.message + '</h5>');
+   
+        }
+      
     }
   }).listen(port, host);
 }
