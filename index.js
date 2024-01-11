@@ -30,9 +30,7 @@ async function streamPdf(url, options) {
   } = options;
 
   console.log('Launching chromium:', executablePath || '(puppeteer builtin)');
-  const browser = await puppeteer.launch({
-    executablePath, args: ['--no-sandbox']
-  });
+  const browser = await puppeteer.launch({ headless: true, args:['--no-sandbox'] ,executablePath: executablePath});
 
   const page = await browser.newPage();
   await page.setViewport({
